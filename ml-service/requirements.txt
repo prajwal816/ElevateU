@@ -1,6 +1,7 @@
 fastapi==0.95.2
 uvicorn[standard]==0.22.0
 python-multipart==0.0.6
+gunicorn
 pdfminer.six==20221105
 scikit-learn==1.3.2
 numpy==1.24.4
