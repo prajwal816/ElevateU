@@ -1,0 +1,81 @@
+import course1 from "@/assets/course-1.jpg";
+import course2 from "@/assets/course-2.jpg";
+import course3 from "@/assets/course-3.jpg";
+import course4 from "@/assets/course-4.jpg";
+import course5 from "@/assets/course-5.jpg";
+import course6 from "@/assets/course-6.jpg";
+
+export const courses = [
+  {
+    id: 1,
+    image: course1,
+    title: "The Complete Digital Marketing Course - 12 Courses in 1",
+    instructor: "Larry Lawson",
+    rating: 4.5,
+    reviews: 6500,
+    students: 6500,
+    duration: "6h 56m",
+    level: "All level",
+    price: "$140",
+  },
+  {
+    id: 2,
+    image: course2,
+    title: "Sketch from A to Z: for app designer",
+    instructor: "Frances Guerrero",
+    rating: 4.0,
+    reviews: 5235,
+    students: 4500,
+    duration: "9h 32m",
+    level: "Beginner",
+    price: "$89",
+  },
+  {
+    id: 3,
+    image: course3,
+    title: "JavaScript: Full Understanding",
+    instructor: "Louis Ferguson",
+    rating: 4.5,
+    reviews: 1958,
+    students: 2500,
+    duration: "15h 30m",
+    level: "Beginner",
+    price: "$105",
+  },
+  {
+    id: 4,
+    image: course4,
+    title: "Behavior, Psychology and Care Training",
+    instructor: "Larry Lawson",
+    rating: 4.8,
+    reviews: 15000,
+    students: 15000,
+    duration: "8h 15m",
+    level: "All level",
+    price: "$342",
+  },
+  {
+    id: 5,
+    image: course5,
+    title: "Microsoft Excel - Excel from Beginner to Advanced",
+    instructor: "Frances Guerrero",
+    rating: 3.6,
+    reviews: 8000,
+    students: 8000,
+    duration: "12h 45m",
+    level: "Beginner",
+    price: "$245",
+  },
+  {
+    id: 6,
+    image: course6,
+    title: "Twitter Marketing & Twitter Ads For Beginners",
+    instructor: "Louis Ferguson",
+    rating: 4.0,
+    reviews: 4000,
+    students: 4000,
+    duration: "10h 20m",
+    level: "Beginner",
+    price: "$199",
+  },
+];

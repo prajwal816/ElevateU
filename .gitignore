@@ -1,0 +1,207 @@
+# Root gitignore for LMS Project
+
+# ===========================================
+# Node.js / JavaScript / TypeScript
+# ===========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build outputs
+dist/
+build/
+.next/
+.turbo/
+.vercel/
+out/
+
+# Vite
+.vite/
+.vite-ssg-temp/
+
+# ===========================================
+# Environment Variables
+# ===========================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# ===========================================
+# Logs
+# ===========================================
+logs/
+*.log
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# ===========================================
+# Runtime / Cache
+# ===========================================
+uploads/
+temp/
+tmp/
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# ===========================================
+# IDE / Editor
+# ===========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ===========================================
+# Testing / Coverage
+# ===========================================
+coverage/
+.nyc_output/
+.coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# ===========================================
+# Python
+# ===========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+.env/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ===========================================
+# Docker
+# ===========================================
+.dockerignore
+docker-compose.override.yml
+*.pid
+
+# ===========================================
+# Database
+# ===========================================
+*.db
+*.sqlite
+*.sqlite3
+mongodb-data/
+postgres-data/
+
+# ===========================================
+# ML / AI Models
+# ===========================================
+models/
+*.model
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+*.ckpt
+*.pth
+*.pt
+*.bin
+
+# ===========================================
+# Cloud / Deployment
+# ===========================================
+.vercel/
+.netlify/
+.aws/
+.azure/
+
+# ===========================================
+# Security
+# ===========================================
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+.secrets/
+
+# ===========================================
+# OS Generated Files
+# ===========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ===========================================
+# Backup Files
+# ===========================================
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+*~
+
+# ===========================================
+# Package Managers
+# ===========================================
+# npm
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Python
+requirements-dev.txt
+Pipfile.lock
+
+# ===========================================
+# Documentation Build
+# ===========================================
+docs/_build/
+site/
+_site/
+
+# ===========================================
+# Temporary Files
+# ===========================================
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+

@@ -1,0 +1,278 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 0 0% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+
+    --primary: 14 100% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 95%;
+    --secondary-foreground: 0 0% 10%;
+
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: 24 95% 53%;
+    --accent-foreground: 0 0% 100%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 14 100% 60%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 8%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 14 100% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 14 100% 60%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(14 100% 60%) 0%, hsl(24 95% 53%) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%) 0%, hsl(158 64% 52%) 100%);
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
+
+  .dark {
+    --background: 0 0% 8%;
+    --foreground: 0 0% 95%;
+
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 14 100% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 18%;
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 65%;
+
+    --accent: 24 95% 53%;
+    --accent-foreground: 0 0% 100%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 14 100% 60%;
+
+    --sidebar-background: 0 0% 8%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 14 100% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 14 100% 60%;
+  }
+}
+
+@layer base {
+  /* Landing theme scoped variables */
+  .landing-theme {
+    --background: 0 0% 5%;
+    --foreground: 0 0% 95%;
+
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 24 100% 64%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+
+    --accent: 24 100% 64%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 12%;
+    --ring: 217 91% 60%;
+
+    --radius: 0.5rem;
+
+    --hero-overlay: 0 0% 0% / 0.5;
+    --top-bar-bg: 0 0% 8%;
+  }
+
+  .landing-theme.dark {
+    --background: 220 15% 10%;
+    --foreground: 0 0% 98%;
+
+    --card: 220 15% 15%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 220 15% 15%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 24 100% 64%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 220 15% 20%;
+    --muted-foreground: 220 9% 60%;
+
+    --accent: 24 100% 64%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 25%;
+    --input: 220 15% 25%;
+    --ring: 217 91% 60%;
+
+    --hero-overlay: 0 0% 0% / 0.7;
+    --top-bar-bg: 220 15% 15%;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.015);
+    backdrop-filter: blur(120px) saturate(180%);
+    -webkit-backdrop-filter: blur(120px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow:
+      0 8px 32px 0 rgba(0, 0, 0, 0.37),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.025);
+    backdrop-filter: blur(120px) saturate(200%);
+    -webkit-backdrop-filter: blur(120px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow:
+      0 12px 48px 0 rgba(0, 0, 0, 0.5),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-card-light {
+    background: rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(100px) saturate(180%);
+    -webkit-backdrop-filter: blur(100px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow:
+      0 4px 24px 0 rgba(0, 0, 0, 0.25),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+    transition: all 0.3s ease;
+  }
+
+  .glass-card-light:hover {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(100px) saturate(200%);
+    -webkit-backdrop-filter: blur(100px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow:
+      0 8px 32px 0 rgba(0, 0, 0, 0.35),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  .glass-card-orange {
+    background: rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(100px) saturate(180%);
+    -webkit-backdrop-filter: blur(100px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 
+      0 4px 24px 0 rgba(0, 0, 0, 0.25),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .glass-card-orange:hover {
+    background: rgba(255, 120, 40, 0.15);
+    backdrop-filter: blur(120px) saturate(220%);
+    -webkit-backdrop-filter: blur(120px) saturate(220%);
+    border: 1px solid rgba(255, 120, 40, 0.4);
+    box-shadow: 
+      0 8px 32px 0 rgba(255, 100, 20, 0.3),
+      0 0 40px 0 rgba(255, 120, 40, 0.2),
+      inset 0 0 0 1px rgba(255, 140, 60, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .stat-card-orange {
+    background: rgba(255, 255, 255, 0.015);
+    backdrop-filter: blur(120px) saturate(180%);
+    -webkit-backdrop-filter: blur(120px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 
+      0 8px 32px 0 rgba(0, 0, 0, 0.37),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+  
+  .stat-card-orange:hover {
+    background: rgba(255, 120, 40, 0.12);
+    backdrop-filter: blur(140px) saturate(220%);
+    -webkit-backdrop-filter: blur(140px) saturate(220%);
+    border: 1px solid rgba(255, 120, 40, 0.35);
+    box-shadow: 
+      0 12px 48px 0 rgba(255, 100, 20, 0.35),
+      0 0 50px 0 rgba(255, 120, 40, 0.25),
+      inset 0 0 0 1px rgba(255, 140, 60, 0.18);
+    transform: translateY(-4px) scale(1.02);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground dark;
+  }
+}

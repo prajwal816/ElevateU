@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
+*.log.*
+
+# Environment variables (allowed in private repo)
+# Intentionally not ignoring .env files
+
+# Production/build files
+dist/
+build/
+
+# User-uploaded content
+uploads/
+
+# OS-generated files
+.DS_Store
+
+# Editor-specific files
+.idea/
+.vscode/
+*.swp
+
+# Test reports
+coverage/
+.nyc_output/

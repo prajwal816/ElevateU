@@ -1,0 +1,10 @@
+fastapi==0.95.2
+uvicorn[standard]==0.22.0
+python-multipart==0.0.6
+pdfminer.six==20221105
+scikit-learn==1.3.2
+numpy==1.26.4
+nltk==3.9.2
+pydantic==1.10.11
+# Optional for better semantic matching (install only if you want heavy embeddings)
+sentence-transformers==2.2.2
