@@ -23,8 +23,24 @@ import { errorHandler } from "./middleware/errorMiddleware.js";
 dotenv.config();
 const app = express();
 
-// CORS
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+// CORS - Allow both local development and production frontend
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
+app.use(cors({ 
+  origin: function(origin, callback) {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true 
+}));
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
