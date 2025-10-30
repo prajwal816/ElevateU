@@ -46,6 +46,7 @@ To get a local copy up and running, you must have **Docker** and **Docker Compos
 ```bash
 git clone [https://github.com/prajwal816/ElevateU.git](https://github.com/prajwal816/ElevateU.git)
 cd ElevateU
+```
 
 ### 2. Set Up Environment Variables
 
@@ -62,6 +63,8 @@ This repository is configured to run entirely with Docker Compose.
 **For a Development Environment:**
 This command uses the `docker-compose.dev.yml` file, which is typically set up with hot-reloading for a better development experience.
 
-```bash
+
 # Build and start all services in detached mode
+```bash
 docker-compose -f docker-compose.dev.yml up --build -d
+```
