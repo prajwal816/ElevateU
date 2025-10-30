@@ -33,7 +33,7 @@ The application is split into three main, independent services and a database:
 Below is a screenshot of the ElevateU dashboard.
 
 
-![ElevateU Application Screenshot](.frontend/src/assets/sample.png)
+![ElevateU Application Screenshot](./frontend/src/assets/sample.png)
 
 ---
 
