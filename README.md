@@ -28,34 +28,12 @@ The application is split into three main, independent services and a database:
 
 ---
 
-## 📁 Project Structure
+## 📸 Application Preview
 
-The repository is a monorepo containing all the services:
+Below is a screenshot of the ElevateU dashboard.
 
-ElevateU/
-├── 📁 backend/ # Node.js backend API (controllers, models, routes)
-│ ├── server.js
-│ └── Dockerfile
-│
-├── 📁 frontend/ # React + Vite frontend application
-│ ├── src/
-│ ├── Dockerfile
-│ ├── nginx.conf
-│ └── vite.config.ts
-│
-├── 📁 ml-service/ # Python service for plagiarism detection
-│ ├── plagiarism/
-│ ├── app.py
-│ ├── Dockerfile
-│ └── requirements.txt
-│
-├── 📁 mongo-init/ # Initialization scripts for MongoDB
-│
-├── 📄 docker-compose.dev.yml # Docker Compose for development (with hot-reloading)
-├── 📄 docker-compose.yml # Docker Compose for production
-├── 📄 .gitignore
-└── 📄 README.md
 
+![ElevateU Application Screenshot](./assets/sample.png)
 
 ---
 
