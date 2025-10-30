@@ -2,9 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
-import passport from "./config/passport.js";
-import session from "express-session";
-import MongoStore from "connect-mongo"; // Import MongoStore for persistent sessions
+import passport from "./config/passport.js"; // passport strategies
+import session from "express-session"; 
 import authRoutes from "./routes/authRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import assignmentRoutes from "./routes/assignmentRoutes.js";
@@ -24,38 +23,25 @@ import { errorHandler } from "./middleware/errorMiddleware.js";
 dotenv.config();
 const app = express();
 
-// CORS Configuration - Uses the environment variable from Render
-app.use(cors({
-  origin: process.env.CORS_ORIGIN, // This will be your Vercel URL
-  credentials: true
-}));
-
+// CORS
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
-// --- UPDATED SESSION CONFIGURATION ---
-// This uses MongoDB to store sessions, making them persistent.
+// Session for Google OAuth
 app.use(
   session({
-    secret: process.env.SESSION_SECRET, // Use a dedicated secret for sessions
+    secret: process.env.JWT_SECRET,
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-    cookie: {
-      secure: process.env.NODE_ENV === "production", // Only send cookies over HTTPS in production
-      maxAge: 1000 * 60 * 60 * 24 * 7, // Cookie valid for 7 days
-    },
   })
 );
-
-// Initialize Passport for authentication
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Connect to the database
 connectDB();
 
-// API Routes
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/assignments", assignmentRoutes);
@@ -71,11 +57,8 @@ app.use("/api/forum", forumRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/enrollments", enrollmentRoutes);
 
-// Custom Error Handler Middleware
+// Error handler
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log("==> Your service is live ✨");
-});
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
