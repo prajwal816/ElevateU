@@ -15,4 +15,14 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    include: ["@monaco-editor/react", "monaco-editor"],
+  },
+  define: {
+    // Monaco Editor needs this for web workers
+    global: "globalThis",
+  },
+  worker: {
+    format: "es",
+  },
 }));

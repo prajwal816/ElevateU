@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Code,
   Play,
@@ -21,6 +22,7 @@ import {
   Target,
   Zap,
   Loader2,
+  AlertTriangle,
 } from "lucide-react";
 import { MonacoCodeEditor } from "@/components/code/MonacoCodeEditor";
 import { ProblemList } from "@/components/code/ProblemList";
@@ -39,6 +41,8 @@ const CodePractice = () => {
   const [output, setOutput] = useState("");
   const [testResults, setTestResults] = useState<any[]>([]);
   const [activeSession, setActiveSession] = useState<any>(null);
+  const [executionStats, setExecutionStats] = useState<any>(null);
+  const [lastExecutionTime, setLastExecutionTime] = useState<number>(0);
   const [stats, setStats] = useState({
     problemsSolved: 0,
     totalProblems: 0,
@@ -48,6 +52,7 @@ const CodePractice = () => {
 
   useEffect(() => {
     loadCodeStats();
+    loadExecutionStats();
     startPracticeSession();
 
     // Cleanup on unmount
@@ -75,6 +80,15 @@ const CodePractice = () => {
     }
   };
 
+  const loadExecutionStats = async () => {
+    try {
+      const response = await codeApi.getExecutionStats();
+      setExecutionStats(response.stats);
+    } catch (error) {
+      console.error("Failed to load execution stats:", error);
+    }
+  };
+
   const startPracticeSession = async () => {
     try {
       const session = await codeApi.startPracticeSession();
@@ -95,6 +109,45 @@ const CodePractice = () => {
     }
   };
 
+  const canExecuteCode = () => {
+    if (!executionStats) return true;
+
+    // Check daily limit
+    if (!executionStats.canExecute) {
+      return false;
+    }
+
+    // Check cooldown
+    const now = Date.now();
+    const timeSinceLastExecution = (now - lastExecutionTime) / 1000;
+    if (timeSinceLastExecution < (executionStats.cooldownSeconds || 3)) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const getCooldownMessage = () => {
+    if (!executionStats) return "";
+
+    if (!executionStats.canExecute) {
+      return "Daily execution limit reached. Try again tomorrow.";
+    }
+
+    const now = Date.now();
+    const timeSinceLastExecution = (now - lastExecutionTime) / 1000;
+    const remainingCooldown =
+      (executionStats.cooldownSeconds || 3) - timeSinceLastExecution;
+
+    if (remainingCooldown > 0) {
+      return `Please wait ${Math.ceil(
+        remainingCooldown
+      )} seconds before running again.`;
+    }
+
+    return "";
+  };
+
   const runCode = async () => {
     if (!userCode.trim()) {
       toast({
@@ -105,9 +158,19 @@ const CodePractice = () => {
       return;
     }
 
+    if (!canExecuteCode()) {
+      toast({
+        title: "Cannot Execute",
+        description: getCooldownMessage(),
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsRunning(true);
     setOutput("");
     setTestResults([]);
+    setLastExecutionTime(Date.now());
 
     try {
       const result = await codeApi.executeCode({
@@ -115,7 +178,21 @@ const CodePractice = () => {
         language: language,
       });
 
-      if (result.success && result.result) {
+      if (!result.success) {
+        if (result.type === "RATE_LIMIT_ERROR") {
+          setOutput(`Rate Limit Error: ${result.error}`);
+          toast({
+            title: "Rate Limit Exceeded",
+            description: result.error,
+            variant: "destructive",
+          });
+        } else {
+          throw new Error(result.error || "Unknown execution error");
+        }
+        return;
+      }
+
+      if (result.result) {
         const { status, stdout, stderr, compile_output, time, memory } =
           result.result;
 
@@ -139,8 +216,11 @@ const CodePractice = () => {
             variant: "destructive",
           });
         }
-      } else {
-        throw new Error(result.error || "Unknown execution error");
+      }
+
+      // Update execution stats
+      if (result.executionStats) {
+        setExecutionStats(result.executionStats);
       }
     } catch (error: any) {
       const errorMsg = error.message || "Failed to execute code";
@@ -179,7 +259,7 @@ const CodePractice = () => {
     setTestResults([]);
 
     try {
-      const result = await codeApi.submitCode({
+      const result = await codeApi.submitCodeForProblem({
         problemId: selectedProblem.id,
         code: userCode,
         language: language,
@@ -253,6 +333,28 @@ const CodePractice = () => {
           </div>
         </div>
 
+        {/* Execution Limit Warning */}
+        {executionStats && (
+          <Alert
+            className={
+              executionStats.canExecute ? "border-blue-500" : "border-red-500"
+            }
+          >
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              {executionStats.canExecute ? (
+                <>
+                  Executions today: {executionStats.executionsToday}/
+                  {executionStats.dailyLimit}(
+                  {executionStats.remainingExecutions} remaining)
+                </>
+              ) : (
+                "Daily execution limit reached. Try again tomorrow."
+              )}
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Stats Overview */}
         <div className="grid gap-4 md:grid-cols-4">
           <Card className="stat-card-orange border-white/10">
@@ -303,20 +405,17 @@ const CodePractice = () => {
           <Card className="stat-card-orange border-white/10">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">
-                Success Rate
+                Executions Today
               </CardTitle>
               <Target className="h-4 w-4 text-accent" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {stats.totalProblems > 0
-                  ? Math.round(
-                      (stats.problemsSolved / stats.totalProblems) * 100
-                    )
-                  : 0}
-                %
+                {executionStats ? executionStats.executionsToday : 0}
               </div>
-              <p className="text-xs text-muted-foreground">accuracy</p>
+              <p className="text-xs text-muted-foreground">
+                of {executionStats ? executionStats.dailyLimit : 100}
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -424,6 +523,24 @@ const CodePractice = () => {
                     onRun={runCode}
                     isRunning={isRunning}
                   />
+
+                  {/* Run Code Button with Status */}
+                  <div className="mt-4 flex items-center justify-between">
+                    <Button
+                      onClick={runCode}
+                      disabled={isRunning || !canExecuteCode()}
+                      className="gap-2"
+                    >
+                      <Play className="h-4 w-4" />
+                      {isRunning ? "Running..." : "Run Code"}
+                    </Button>
+
+                    {!canExecuteCode() && (
+                      <p className="text-sm text-muted-foreground">
+                        {getCooldownMessage()}
+                      </p>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
 

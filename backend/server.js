@@ -20,6 +20,8 @@ import reviewRoutes from "./routes/reviewRoutes.js";
 import enrollmentRoutes from "./routes/enrollmentRoutes.js";
 import codePracticeRoutes from "./routes/codePracticeRoutes.js";
 import codeExecutionRoutes from "./routes/codeExecutionRoutes.js";
+import codeRoutes from "./routes/codeRoutes.js";
+import testRoutes from "./routes/testRoutes.js";
 import { errorHandler } from "./middleware/errorMiddleware.js";
 
 dotenv.config();
@@ -60,6 +62,8 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/enrollments", enrollmentRoutes);
 app.use("/api/code-practice", codePracticeRoutes);
 app.use("/api/code-execution", codeExecutionRoutes);
+app.use("/api/code", codeRoutes);
+app.use("/api/test", testRoutes);
 
 // Error handler
 app.use(errorHandler);

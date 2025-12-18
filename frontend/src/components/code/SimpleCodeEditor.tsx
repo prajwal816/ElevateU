@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -9,9 +9,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Copy, Download, Upload, Play } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import Editor from "@monaco-editor/react";
 
-interface MonacoCodeEditorProps {
+interface SimpleCodeEditorProps {
   value: string;
   onChange: (value: string) => void;
   language: string;
@@ -21,16 +20,11 @@ interface MonacoCodeEditorProps {
 }
 
 const languages = [
-  {
-    value: "javascript",
-    label: "JavaScript",
-    monacoLang: "javascript",
-    judge0Id: 63,
-  },
-  { value: "python", label: "Python", monacoLang: "python", judge0Id: 71 },
-  { value: "java", label: "Java", monacoLang: "java", judge0Id: 62 },
-  { value: "cpp", label: "C++", monacoLang: "cpp", judge0Id: 54 },
-  { value: "c", label: "C", monacoLang: "c", judge0Id: 50 },
+  { value: "javascript", label: "JavaScript", judge0Id: 63 },
+  { value: "python", label: "Python", judge0Id: 71 },
+  { value: "java", label: "Java", judge0Id: 62 },
+  { value: "cpp", label: "C++", judge0Id: 54 },
+  { value: "c", label: "C", judge0Id: 50 },
 ];
 
 const defaultTemplates = {
@@ -61,21 +55,14 @@ int main() {
 }`,
 };
 
-export const MonacoCodeEditor = ({
+export const SimpleCodeEditor = ({
   value,
   onChange,
   language,
   onLanguageChange,
   onRun,
   isRunning = false,
-}: MonacoCodeEditorProps) => {
-  const editorRef = useRef<any>(null);
-
-  const getMonacoLanguage = (lang: string) => {
-    const langConfig = languages.find((l) => l.value === lang);
-    return langConfig?.monacoLang || "javascript";
-  };
-
+}: SimpleCodeEditorProps) => {
   const handleLanguageChange = (newLanguage: string) => {
     onLanguageChange(newLanguage);
     if (!value || value.trim() === "") {
@@ -134,31 +121,6 @@ export const MonacoCodeEditor = ({
     });
   };
 
-  const handleEditorDidMount = (editor: any, monaco: any) => {
-    editorRef.current = editor;
-
-    // Configure custom theme
-    monaco.editor.defineTheme("elevateU-dark", {
-      base: "vs-dark",
-      inherit: true,
-      rules: [
-        { token: "comment", foreground: "6A9955" },
-        { token: "keyword", foreground: "569CD6" },
-        { token: "string", foreground: "CE9178" },
-        { token: "number", foreground: "B5CEA8" },
-      ],
-      colors: {
-        "editor.background": "#1a1a1a",
-        "editor.foreground": "#d4d4d4",
-        "editorLineNumber.foreground": "#858585",
-        "editor.selectionBackground": "#264f78",
-        "editor.inactiveSelectionBackground": "#3a3d41",
-      },
-    });
-
-    monaco.editor.setTheme("elevateU-dark");
-  };
-
   return (
     <div className="space-y-4">
       {/* Editor Controls */}
@@ -200,49 +162,31 @@ export const MonacoCodeEditor = ({
         </div>
       </div>
 
-      {/* Monaco Editor */}
-      <div className="border border-border rounded-md overflow-hidden">
-        <Editor
-          height="400px"
-          language={getMonacoLanguage(language)}
+      {/* Code Editor */}
+      <div className="relative">
+        <textarea
           value={value}
-          onChange={(newValue) => onChange(newValue || "")}
-          onMount={handleEditorDidMount}
-          theme="elevateU-dark"
-          options={{
-            fontSize: 14,
-            minimap: { enabled: false },
-            scrollBeyondLastLine: false,
-            automaticLayout: true,
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full h-[400px] p-4 bg-gray-900 text-gray-100 border border-gray-700 rounded-md font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder={`Write your ${
+            languages.find((l) => l.value === language)?.label
+          } code here...`}
+          spellCheck={false}
+          style={{
+            fontFamily: "'Fira Code', 'Courier New', monospace",
+            lineHeight: "1.5",
             tabSize: 2,
-            insertSpaces: true,
-            wordWrap: "on",
-            lineNumbers: "on",
-            glyphMargin: false,
-            folding: true,
-            lineDecorationsWidth: 0,
-            lineNumbersMinChars: 3,
-            renderWhitespace: "selection",
-            contextmenu: true,
-            mouseWheelZoom: true,
-            smoothScrolling: true,
-            cursorBlinking: "blink",
-            cursorSmoothCaretAnimation: true,
-            selectOnLineNumbers: true,
-            roundedSelection: false,
-            readOnly: false,
-            cursorStyle: "line",
-            automaticLayout: true,
           }}
-          loading={
-            <div className="flex items-center justify-center h-[400px] bg-gray-900 text-gray-400">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
-                <p>Loading Monaco Editor...</p>
-              </div>
-            </div>
-          }
         />
+
+        {/* Line numbers overlay */}
+        <div className="absolute left-2 top-4 text-gray-500 text-sm font-mono pointer-events-none select-none">
+          {value.split("\n").map((_, index) => (
+            <div key={index} style={{ height: "21px" }}>
+              {index + 1}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Editor Info */}
