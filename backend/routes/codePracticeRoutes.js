@@ -23,4 +23,21 @@ router.post("/submit", submitCode);
 router.get("/progress", getUserProgress);
 router.get("/submissions", getUserSubmissions);
 
+// Practice session routes
+import {
+    startPracticeSession,
+    endPracticeSession,
+    updatePracticeSession,
+    getPracticeSessions,
+    getPracticeStats,
+    getActiveSession,
+} from "../controllers/practiceSessionController.js";
+
+router.post("/session/start", startPracticeSession);
+router.post("/session/end", endPracticeSession);
+router.put("/session/:sessionId", updatePracticeSession);
+router.get("/sessions", getPracticeSessions);
+router.get("/sessions/stats", getPracticeStats);
+router.get("/sessions/active", getActiveSession);
+
 export default router;

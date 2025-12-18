@@ -20,13 +20,15 @@ import {
   BookOpen,
   Target,
   Zap,
+  Loader2,
 } from "lucide-react";
-import { CodeEditor } from "@/components/code/CodeEditor";
+import { MonacoCodeEditor } from "@/components/code/MonacoCodeEditor";
 import { ProblemList } from "@/components/code/ProblemList";
 import { CodeProgress } from "@/components/code/CodeProgress";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
 import { codePracticeApi } from "@/lib/api";
+import codeApi from "@/api/codeApi";
 
 const CodePractice = () => {
   const { user } = useAuth();
@@ -36,6 +38,7 @@ const CodePractice = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [output, setOutput] = useState("");
   const [testResults, setTestResults] = useState<any[]>([]);
+  const [activeSession, setActiveSession] = useState<any>(null);
   const [stats, setStats] = useState({
     problemsSolved: 0,
     totalProblems: 0,
@@ -45,7 +48,15 @@ const CodePractice = () => {
 
   useEffect(() => {
     loadCodeStats();
-  }, []);
+    startPracticeSession();
+
+    // Cleanup on unmount
+    return () => {
+      if (activeSession) {
+        endPracticeSession();
+      }
+    };
+  }, [user]);
 
   const loadCodeStats = async () => {
     try {
@@ -60,59 +71,83 @@ const CodePractice = () => {
       });
     } catch (error) {
       console.error("Failed to load code stats:", error);
-      // Fallback to mock data
-      setStats({
-        problemsSolved: 0,
-        totalProblems: 50,
-        streak: 0,
-        totalTime: 0,
-      });
+      // Keep stats at 0 if API fails
+    }
+  };
+
+  const startPracticeSession = async () => {
+    try {
+      const session = await codeApi.startPracticeSession();
+      setActiveSession(session);
+    } catch (error) {
+      console.error("Failed to start practice session:", error);
+    }
+  };
+
+  const endPracticeSession = async () => {
+    if (!activeSession) return;
+
+    try {
+      await codeApi.endPracticeSession(activeSession.sessionId);
+      setActiveSession(null);
+    } catch (error) {
+      console.error("Failed to end practice session:", error);
     }
   };
 
   const runCode = async () => {
-    setIsRunning(true);
-    try {
-      // Mock code execution - replace with actual code execution service
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      const mockOutput = `Output:\nHello, World!\n\nExecution completed successfully.`;
-      setOutput(mockOutput);
-
-      // Mock test results
-      const mockTestResults = [
-        {
-          id: 1,
-          input: "test case 1",
-          expected: "expected output",
-          actual: "expected output",
-          passed: true,
-        },
-        {
-          id: 2,
-          input: "test case 2",
-          expected: "expected output",
-          actual: "expected output",
-          passed: true,
-        },
-        {
-          id: 3,
-          input: "test case 3",
-          expected: "expected output",
-          actual: "wrong output",
-          passed: false,
-        },
-      ];
-      setTestResults(mockTestResults);
-
+    if (!userCode.trim()) {
       toast({
-        title: "Code Executed",
-        description: "Your code has been executed successfully!",
+        title: "No Code",
+        description: "Please write some code first.",
+        variant: "destructive",
       });
-    } catch (error) {
+      return;
+    }
+
+    setIsRunning(true);
+    setOutput("");
+    setTestResults([]);
+
+    try {
+      const result = await codeApi.executeCode({
+        code: userCode,
+        language: language,
+      });
+
+      if (result.success && result.result) {
+        const { status, stdout, stderr, compile_output, time, memory } =
+          result.result;
+
+        let outputText = "";
+        if (stdout) outputText += `Output:\n${stdout}\n`;
+        if (stderr) outputText += `Error:\n${stderr}\n`;
+        if (compile_output) outputText += `Compilation:\n${compile_output}\n`;
+        outputText += `\nExecution Time: ${time}s\nMemory Used: ${memory}KB`;
+
+        setOutput(outputText);
+
+        if (status === "Accepted") {
+          toast({
+            title: "Code Executed Successfully! ✅",
+            description: `Execution time: ${time}s`,
+          });
+        } else {
+          toast({
+            title: status,
+            description: "Check the output panel for details",
+            variant: "destructive",
+          });
+        }
+      } else {
+        throw new Error(result.error || "Unknown execution error");
+      }
+    } catch (error: any) {
+      const errorMsg = error.message || "Failed to execute code";
+      setOutput(`Error: ${errorMsg}`);
       toast({
         title: "Execution Error",
-        description: "Failed to execute code. Please try again.",
+        description: errorMsg,
         variant: "destructive",
       });
     } finally {
@@ -121,20 +156,84 @@ const CodePractice = () => {
   };
 
   const submitSolution = async () => {
-    if (!selectedProblem) return;
-
-    try {
-      // Mock submission - replace with actual API call
+    if (!selectedProblem) {
       toast({
-        title: "Solution Submitted",
-        description: "Your solution has been submitted for evaluation!",
-      });
-    } catch (error) {
-      toast({
-        title: "Submission Error",
-        description: "Failed to submit solution. Please try again.",
+        title: "No Problem Selected",
+        description: "Please select a problem first.",
         variant: "destructive",
       });
+      return;
+    }
+
+    if (!userCode.trim()) {
+      toast({
+        title: "No Code",
+        description: "Please write some code first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsRunning(true);
+    setOutput("");
+    setTestResults([]);
+
+    try {
+      const result = await codeApi.submitCode({
+        problemId: selectedProblem.id,
+        code: userCode,
+        language: language,
+      });
+
+      if (result.success) {
+        const {
+          status,
+          testResults: results,
+          passedTestCases,
+          totalTestCases,
+          xpEarned,
+        } = result;
+
+        setTestResults(results || []);
+        setOutput(
+          `Status: ${status}\nPassed: ${passedTestCases}/${totalTestCases} test cases`
+        );
+
+        if (status === "Accepted") {
+          toast({
+            title: "Accepted! 🎉",
+            description: `You earned ${xpEarned} XP!`,
+          });
+          // Reload stats to reflect new progress
+          loadCodeStats();
+        } else {
+          toast({
+            title: status,
+            description: `${passedTestCases}/${totalTestCases} test cases passed`,
+            variant: "destructive",
+          });
+        }
+      } else {
+        throw new Error(result.error || "Submission failed");
+      }
+    } catch (error: any) {
+      const errorMsg = error.message || "Failed to submit code";
+      setOutput(`Error: ${errorMsg}`);
+      toast({
+        title: "Submission Error",
+        description: errorMsg,
+        variant: "destructive",
+      });
+    } finally {
+      setIsRunning(false);
+    }
+  };
+
+  const handleProblemSelect = (problem: any) => {
+    setSelectedProblem(problem);
+    // Load template for the selected problem
+    if (problem.templates && problem.templates[language]) {
+      setUserCode(problem.templates[language]);
     }
   };
 
@@ -196,7 +295,7 @@ const CodePractice = () => {
                 {Math.floor(stats.totalTime / 60)}h
               </div>
               <p className="text-xs text-muted-foreground">
-                {stats.totalTime % 60}m this week
+                {stats.totalTime % 60}m total
               </p>
             </CardContent>
           </Card>
@@ -210,7 +309,11 @@ const CodePractice = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {Math.round((stats.problemsSolved / stats.totalProblems) * 100)}
+                {stats.totalProblems > 0
+                  ? Math.round(
+                      (stats.problemsSolved / stats.totalProblems) * 100
+                    )
+                  : 0}
                 %
               </div>
               <p className="text-xs text-muted-foreground">accuracy</p>
@@ -237,7 +340,7 @@ const CodePractice = () => {
                 </CardHeader>
                 <CardContent>
                   <ProblemList
-                    onSelectProblem={setSelectedProblem}
+                    onSelectProblem={handleProblemSelect}
                     selectedProblem={selectedProblem}
                   />
                 </CardContent>
@@ -272,24 +375,28 @@ const CodePractice = () => {
                       </p>
                     </div>
 
-                    <div>
-                      <h4 className="font-medium mb-2">Example</h4>
-                      <div className="bg-muted/50 p-3 rounded-md text-sm font-mono">
-                        <div>Input: {selectedProblem.example.input}</div>
-                        <div>Output: {selectedProblem.example.output}</div>
+                    {selectedProblem.example && (
+                      <div>
+                        <h4 className="font-medium mb-2">Example</h4>
+                        <div className="bg-muted/50 p-3 rounded-md text-sm font-mono">
+                          <div>Input: {selectedProblem.example.input}</div>
+                          <div>Output: {selectedProblem.example.output}</div>
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     <div className="flex gap-2">
                       <Button
-                        onClick={() => setUserCode(selectedProblem.template)}
-                        variant="outline"
-                        size="sm"
+                        onClick={submitSolution}
+                        disabled={isRunning}
+                        className="gap-2"
                       >
-                        Load Template
-                      </Button>
-                      <Button onClick={submitSolution} size="sm">
-                        Submit Solution
+                        {isRunning ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Trophy className="h-4 w-4" />
+                        )}
+                        {isRunning ? "Submitting..." : "Submit Solution"}
                       </Button>
                     </div>
                   </CardContent>
@@ -309,22 +416,14 @@ const CodePractice = () => {
                   <CardDescription>Write and test your code</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <CodeEditor
+                  <MonacoCodeEditor
                     value={userCode}
                     onChange={setUserCode}
                     language={language}
                     onLanguageChange={setLanguage}
+                    onRun={runCode}
+                    isRunning={isRunning}
                   />
-                  <div className="flex gap-2 mt-4">
-                    <Button
-                      onClick={runCode}
-                      disabled={isRunning}
-                      className="gap-2"
-                    >
-                      <Play className="h-4 w-4" />
-                      {isRunning ? "Running..." : "Run Code"}
-                    </Button>
-                  </div>
                 </CardContent>
               </Card>
 
@@ -334,7 +433,7 @@ const CodePractice = () => {
                     <CardTitle>Output</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="bg-muted/50 p-3 rounded-md min-h-[200px] font-mono text-sm">
+                    <div className="bg-muted/50 p-3 rounded-md min-h-[200px] font-mono text-sm whitespace-pre-wrap">
                       {output || "Run your code to see output here..."}
                     </div>
                   </CardContent>
@@ -347,13 +446,13 @@ const CodePractice = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
-                        {testResults.map((result) => (
+                        {testResults.map((result, index) => (
                           <div
-                            key={result.id}
+                            key={result.testCaseId || index}
                             className="flex items-center justify-between p-2 rounded-md bg-muted/30"
                           >
                             <span className="text-sm">
-                              Test Case {result.id}
+                              Test Case {index + 1}
                             </span>
                             {result.passed ? (
                               <CheckCircle className="h-4 w-4 text-success" />
