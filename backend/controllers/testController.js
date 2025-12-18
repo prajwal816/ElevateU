@@ -34,8 +34,33 @@ export const testBackendHealth = async (req, res, next) => {
             timestamp: new Date().toISOString(),
             environment: process.env.NODE_ENV,
             judge0Configured: !!process.env.JUDGE0_API_KEY,
+            codeArenaConfigured: !!process.env.CODEARENA_API_KEY,
         });
     } catch (error) {
         next(error);
+    }
+};
+
+export const testCodeArenaConnection = async (req, res, next) => {
+    try {
+        // Import CodeArena service
+        const codeArenaService = (await import('../services/codeArenaService.js')).default;
+
+        // Test with a simple "Hello World" program
+        const testCode = 'console.log("Hello from CodeArena!");';
+        const result = await codeArenaService.submitCode(testCode, 'javascript', '', 'test-user');
+
+        res.json({
+            success: true,
+            message: "CodeArena API connection successful",
+            token: result.token,
+            remainingExecutions: result.remainingExecutions,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "CodeArena API connection failed",
+            error: error.message,
+        });
     }
 };

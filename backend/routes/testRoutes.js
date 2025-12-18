@@ -7,4 +7,7 @@ const router = express.Router();
 router.get('/health', testBackendHealth);
 router.get('/judge0', testJudge0Connection);
 
+import { testCodeArenaConnection } from '../controllers/testController.js';
+router.get('/codearena', testCodeArenaConnection);
+
 export default router;
