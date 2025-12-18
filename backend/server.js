@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
 import passport from "./config/passport.js"; // passport strategies
-import session from "express-session"; 
+import session from "express-session";
 import authRoutes from "./routes/authRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import assignmentRoutes from "./routes/assignmentRoutes.js";
@@ -18,6 +18,7 @@ import announcementRoutes from "./routes/announcementRoutes.js";
 import forumRoutes from "./routes/forumRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import enrollmentRoutes from "./routes/enrollmentRoutes.js";
+import codePracticeRoutes from "./routes/codePracticeRoutes.js";
 import { errorHandler } from "./middleware/errorMiddleware.js";
 
 dotenv.config();
@@ -56,6 +57,7 @@ app.use("/api/announcements", announcementRoutes);
 app.use("/api/forum", forumRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/enrollments", enrollmentRoutes);
+app.use("/api/code-practice", codePracticeRoutes);
 
 // Error handler
 app.use(errorHandler);

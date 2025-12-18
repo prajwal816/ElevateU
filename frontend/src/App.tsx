@@ -23,6 +23,7 @@ import Grades from "./pages/Grades";
 import Forum from "./pages/Forum";
 import Calendar from "./pages/Calendar";
 import Settings from "./pages/Settings";
+import CodePractice from "./pages/CodePractice";
 import NotFound from "./pages/NotFound";
 import LandingIndex from "./pages/landing/LandingIndex";
 import AboutUs from "./pages/landing/AboutUs";
@@ -147,6 +148,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Calendar />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/code-practice"
+            element={
+              <ProtectedRoute>
+                <CodePractice />
               </ProtectedRoute>
             }
           />

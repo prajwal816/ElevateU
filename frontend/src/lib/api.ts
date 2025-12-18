@@ -37,4 +37,43 @@ api.interceptors.response.use(
   }
 );
 
+// Code Practice API endpoints
+export const codePracticeApi = {
+  // Get all problems with filters
+  getProblems: (params?: {
+    difficulty?: string;
+    category?: string;
+    status?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }) => api.get('/code-practice/problems', { params }),
+
+  // Get problem by ID
+  getProblem: (id: string) => api.get(`/code-practice/problems/${id}`),
+
+  // Submit code for execution
+  submitCode: (data: {
+    problemId: string;
+    code: string;
+    language: string;
+  }) => api.post('/code-practice/submit', data),
+
+  // Get user progress
+  getUserProgress: () => api.get('/code-practice/progress'),
+
+  // Get user submissions
+  getUserSubmissions: (params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    problemId?: string;
+  }) => api.get('/code-practice/submissions', { params }),
+
+  // Get leaderboard
+  getLeaderboard: (limit?: number) => api.get('/code-practice/leaderboard', {
+    params: { limit }
+  }),
+};
+
 export default api;
